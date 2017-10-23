@@ -1,0 +1,3 @@
+[submodule "RT-WiFi"]
+	path = RT-WiFi
+	url = https://github.com/roquebetioljr/RT-WiFi.git
