@@ -12,7 +12,7 @@ class PacketAnalyser:
         self.out_file = out_file
         self.merged_dict = {}
 
-    def AnalyseWlan(self):
+    def analyse_wlan(self):
         print('Analysing Wlan')
         try:
             file = open(self.wlan_file, 'r')
@@ -42,7 +42,7 @@ class PacketAnalyser:
 
         return True
 
-    def AnalyseEth(self):
+    def analyse_eth(self):
         print('Analysing Eth')
         try:
             file = open(self.eth_file, 'r')
@@ -81,7 +81,7 @@ class PacketAnalyser:
 
         return True
 
-    def WriteOutFile(self):
+    def write_out_file(self):
         print('Creating output file')
         merded_indexes = self.merged_dict.keys()
 
@@ -92,7 +92,8 @@ class PacketAnalyser:
             return False
 
         packet_lost_counter = 0
-
+        packet_not_transmmited = 0
+        last_pkt_id = -1
         for pkt_id in sorted(merded_indexes):
             packet = self.merged_dict[pkt_id]
             is_packet_lost = packet['packet_lost']
@@ -102,10 +103,13 @@ class PacketAnalyser:
                 delta_eth_receive = ''
                 transmission_delay = ''
             else:
+                if last_pkt_id != -1 and pkt_id > last_pkt_id + 1:
+                    packet_not_transmmited += (pkt_id - last_pkt_id + 1)
                 receive_timestamp = datetime.utcfromtimestamp(packet['receive_timestamp'])
                 delta_eth_receive = '{:0,.10f}'.format(packet['delta_eth_receive'])
                 transmission_delay = '{:0,.10f}'.format(packet['transmission_delay'])
 
+            last_pkt_id = pkt_id
             transmit_timestamp = datetime.utcfromtimestamp(packet['transmit_timestamp'])
             delta_wlan_transmit = '{:0,.10f}'.format(packet['delta_wlan_transmit'])
 
@@ -119,10 +123,11 @@ class PacketAnalyser:
         file.close()
 
         print('Total of packet lost: {}'.format(packet_lost_counter))
+        print('Total of packet not transmmited: {}'.format(packet_not_transmmited))
         return True
 
     def execute(self):
-        if self.AnalyseWlan() and self.AnalyseEth() and self.WriteOutFile():
+        if self.analyse_wlan() and self.analyse_eth() and self.write_out_file():
             print("FINISHED. Success!")
         else:
             print("FINISHED. Failed!")
@@ -135,92 +140,3 @@ if __name__ == '__main__':
         analyser = PacketAnalyser(str(sys.argv[1]), str(sys.argv[2]), str(sys.argv[3]))
         analyser.execute()
 
-
-
-'''
-#loads wlan file
-file = open('wlan0-1.json', 'r')
-wlan_content = file.read()
-file.close()
-wlan_packet_list = json.loads(wlan_content)
-
-#loads eth file
-file = open('eth0-1.json', 'r')
-eth_content = file.read()
-file.close()
-eth_packet_list = json.loads(eth_content)
-
-merged_dict = {}
-last_time = -1
-for packet in wlan_packet_list:
-    if '_source' in packet and 'layers' in packet['_source'] and \
-                    'udp' in packet['_source']['layers']:
-        pkt_id = packet['_source']['layers']['ip']['ip.id']
-        pkt_id = int(pkt_id, 16)
-
-        curr_timestamp = float(packet['_source']['layers']['frame']['frame.time_epoch'])
-        delta = 0
-        if last_time != -1:
-            delta = curr_timestamp - last_time
-        last_time = curr_timestamp
-
-        #pkt_time = datetime.utcfromtimestamp(curr_timestamp)
-
-        merged_dict[pkt_id] = {'transmit_timestamp': curr_timestamp, 'delta_wlan_transmit': delta, 'packet_lost': True}
-
-
-last_time = -1
-for packet in eth_packet_list:
-    if '_source' in packet and 'layers' in packet['_source'] and \
-                    'udp' in packet['_source']['layers']:
-        pkt_id = packet['_source']['layers']['ip']['ip.id']
-        pkt_id = int(pkt_id, 16)
-
-        curr_timestamp = float(packet['_source']['layers']['frame']['frame.time_epoch'])
-        delta = 0
-        if last_time != -1:
-            delta = curr_timestamp - last_time
-        last_time = curr_timestamp
-
-        #pkt_time = datetime.utcfromtimestamp(curr_timestamp)
-
-        pkt_delay = curr_timestamp - merged_dict[pkt_id]['transmit_timestamp']
-
-        merged_dict[pkt_id]['receive_timestamp'] = curr_timestamp
-        merged_dict[pkt_id]['delta_eth_receive'] = delta
-        merged_dict[pkt_id]['packet_lost'] = False
-        merged_dict[pkt_id]['transmission_delay'] = pkt_delay
-
-merded_indexes = merged_dict.keys()
-
-file = open('merged0.csv', 'w')
-
-packet_lost_counter = 0
-
-for pkt_id in sorted(merded_indexes):
-    packet = merged_dict[pkt_id]
-    is_packet_lost = packet['packet_lost']
-    if is_packet_lost:
-        packet_lost_counter += 1
-        receive_timestamp = ''
-        delta_eth_receive = ''
-        transmission_delay = ''
-    else:
-        receive_timestamp = datetime.utcfromtimestamp(packet['receive_timestamp'])
-        delta_eth_receive = '{:0,.10f}'.format(packet['delta_eth_receive'])
-        transmission_delay = '{:0,.10f}'.format(packet['transmission_delay'])
-
-    transmit_timestamp = datetime.utcfromtimestamp(packet['transmit_timestamp'])
-    delta_wlan_transmit = '{:0,.10f}'.format(packet['delta_wlan_transmit'])
-
-    #id | Packet Lost | transmit timestamp | delta transmit | receive timestamp | delta receive | transmmission delay
-    line = '{};{};{};{};{};{};{};\n'.format(pkt_id, is_packet_lost, transmit_timestamp, delta_wlan_transmit,
-                                    receive_timestamp, delta_eth_receive, transmission_delay)
-    print(line)
-    file.write(line)
-
-#print(merged_dict)
-file.close()
-
-print('Total of packet lost: {}'.format(packet_lost_counter))
-'''
