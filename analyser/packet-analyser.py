@@ -11,6 +11,7 @@ class PacketAnalyser:
         self.eth_file = eth_file
         self.out_file = out_file
         self.merged_dict = {}
+        self.seq_pkts = []
 
     def analyse_wlan(self):
         print('Analysing Wlan')
@@ -37,8 +38,10 @@ class PacketAnalyser:
 
                 # pkt_time = datetime.utcfromtimestamp(curr_timestamp)
 
-                self.merged_dict[pkt_id] = {'transmit_timestamp': curr_timestamp, 'delta_wlan_transmit': delta,
-                                       'packet_lost': True}
+                self.merged_dict[pkt_id] = {'transmit_timestamp': curr_timestamp,
+                                            'delta_wlan_transmit': delta,
+                                            'packet_lost': True}
+                self.seq_pkts.append(pkt_id)
 
         return True
 
@@ -78,6 +81,7 @@ class PacketAnalyser:
                                                 'packet_lost': True, 'receive_timestamp': curr_timestamp,
                                                 'delta_eth_receive': delta,
                                                 'transmission_delay': -1}
+                    self.seq_pkts.append(pkt_id)
 
         return True
 
@@ -94,7 +98,7 @@ class PacketAnalyser:
         packet_lost_counter = 0
         packet_not_transmmited = 0
         last_pkt_id = -1
-        for pkt_id in sorted(merded_indexes):
+        for pkt_id in self.seq_pkts:
             packet = self.merged_dict[pkt_id]
             is_packet_lost = packet['packet_lost']
             if is_packet_lost:
