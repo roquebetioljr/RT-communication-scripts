@@ -24,10 +24,10 @@ iperf3 -s -i 1 -f k -p 5100 >> iperf_server_$5.log &
 
 sleep 1
 # for RT stations
-iperf3 -c 127.0.0.1 -b 36k -u -i 1 -f l -p 5100 -S 0x06 -k 1000 -l 45 > iperf_$5.log
+iperf3 -c $4 -b 36k -u -i 1 -f l -p 5100 -S 0x06 -k 1000 -l 45 > iperf_$5.log
 
 # for NRT stations
-#iperf3 -c 127.0.0.1 -b 9M -u -i 1 -f l -p 5100 > iperf_$5.log
+#iperf3 -c $4 -b 9M -u -i 1 -f l -p 5100 > iperf_$5.log
 
 sleep 5
 sudo killall tcpdump
