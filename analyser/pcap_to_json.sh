@@ -6,38 +6,44 @@ if ! hash tshark > /dev/null 2>&1 ; then
     exit 1
 fi
 
-if [ $# != 1 ]; then
-    echo "Correct usage. $ pcap_to_json.sh <path/of/results>"
+if [ $# -lt 1 ]; then
+    echo "Correct usage. $ pcap_to_json.sh <paths/of/results>"
     exit 1
 fi
 
-if [ ! -d $1 ]; then
-    echo "Path $1 not found"
-    exit 1
-fi
+for var in "$@"
+do
+    echo "$var"
 
-cd $1
-
-CNT=0
-
-while [ $CNT -lt 10 ] ; do
-    if [ -f eth_${CNT}.pcap ]; then
-        echo "Exporting eth_${CNT}.pcap"
-        tshark -r eth_${CNT}.pcap -T json > eth_${CNT}.json &
-    else
-        echo "File eth_${CNT}.pcap not found. Continuing.."
+    if [ ! -d $var ]; then
+        echo "Path $var not found"
+        exit 1
     fi
 
-    if [ -f wlan_${CNT}.pcap ]; then
-        echo "Exporting wlan_${CNT}.pcap"
-        tshark -r wlan_${CNT}.pcap -T json > wlan_${CNT}.json &
-    else
-        echo "File wlan_${CNT}.pcap not found. Continuing.."
-    fi
-    CNT=$((CNT+1))
+    cd $var
+
+    CNT=0
+
+    while [ $CNT -lt 10 ] ; do
+        if [ -f eth_${CNT}.pcap ]; then
+            echo "Exporting eth_${CNT}.pcap"
+            tshark -r eth_${CNT}.pcap -T json > eth_${CNT}.json &
+        else
+            echo "File eth_${CNT}.pcap not found. Continuing.."
+        fi
+
+        if [ -f wlan_${CNT}.pcap ]; then
+            echo "Exporting wlan_${CNT}.pcap"
+            tshark -r wlan_${CNT}.pcap -T json > wlan_${CNT}.json &
+        else
+            echo "File wlan_${CNT}.pcap not found. Continuing.."
+        fi
+        CNT=$((CNT+1))
+    done
+
+    wait
+    cd ..
 done
-
-wait
 
 echo "end"
 exit 0
