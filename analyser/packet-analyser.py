@@ -101,7 +101,8 @@ class PacketAnalyser:
         packet_lost_counter = 0
         packet_not_transmmited = 0
         last_pkt_id = -1
-        jitter = 0;
+        packet_received_counter = 0
+        sum_transmit_delay = 0
         for pkt_id in self.seq_pkts:
             packet = self.merged_dict[pkt_id]
             is_packet_lost = packet['packet_lost']
@@ -116,6 +117,8 @@ class PacketAnalyser:
                 receive_timestamp = datetime.utcfromtimestamp(packet['receive_timestamp'])
                 delta_eth_receive = '{:0,.10f}'.format(packet['delta_eth_receive'])
                 transmission_delay = '{:0,.10f}'.format(packet['transmission_delay'])
+                sum_transmit_delay += packet['transmission_delay']
+                packet_received_counter += 1
 
             last_pkt_id = pkt_id
             transmit_timestamp = datetime.utcfromtimestamp(packet['transmit_timestamp'])
@@ -129,11 +132,25 @@ class PacketAnalyser:
             print(line)
             file.write(line)
 
-        line = 'Total of packet lost; {};\n'.format(packet_lost_counter)
+        line = 'Total of transmitted packets; {};\n'.format(len(self.seq_pkts))
         print(line)
         file.write(line)
 
-        line = 'Total of packet not transmmited; {};\n'.format(packet_not_transmmited)
+        line = 'Total of received packets; {};\n'.format(packet_received_counter)
+        print(line)
+        file.write(line)
+
+        line = 'Total of lost packets; {};\n'.format(packet_lost_counter)
+        print(line)
+        file.write(line)
+
+        line = 'Total of not transmitted packets; {};\n'.format(packet_not_transmmited)
+        print(line)
+        file.write(line)
+
+        avg_transmit_delay = (sum_transmit_delay/packet_received_counter)
+
+        line = 'Average of transmission delay; {};\n'.format(avg_transmit_delay)
         print(line)
         file.write(line)
 
