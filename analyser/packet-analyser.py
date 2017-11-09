@@ -71,11 +71,14 @@ class PacketAnalyser:
                 # pkt_time = datetime.utcfromtimestamp(curr_timestamp)
                 if pkt_id in self.merged_dict:
                     pkt_delay = curr_timestamp - self.merged_dict[pkt_id]['transmit_timestamp']
-
-                    self.merged_dict[pkt_id]['receive_timestamp'] = curr_timestamp
-                    self.merged_dict[pkt_id]['delta_eth_receive'] = delta
-                    self.merged_dict[pkt_id]['packet_lost'] = False
-                    self.merged_dict[pkt_id]['transmission_delay'] = pkt_delay
+                    if pkt_delay >= 0:
+                        self.merged_dict[pkt_id]['receive_timestamp'] = curr_timestamp
+                        self.merged_dict[pkt_id]['delta_eth_receive'] = delta
+                        self.merged_dict[pkt_id]['packet_lost'] = False
+                        self.merged_dict[pkt_id]['transmission_delay'] = pkt_delay
+                    else:
+                        del self.merged_dict[pkt_id] # ignore this packet. Something wrong happend
+                        self.seq_pkts.remove(pkt_id)
                 else:
                     self.merged_dict[pkt_id] = {'transmit_timestamp': -1, 'delta_wlan_transmit': -1,
                                                 'packet_lost': True, 'receive_timestamp': curr_timestamp,
@@ -87,8 +90,8 @@ class PacketAnalyser:
 
     def write_out_file(self):
         print('Creating output file')
-        merded_indexes = self.merged_dict.keys()
-
+        #merged_indexes = self.merged_dict.keys()
+        #merged_indexes.sort()
         try:
             file = open(self.out_file, 'w')
         except:
@@ -98,6 +101,7 @@ class PacketAnalyser:
         packet_lost_counter = 0
         packet_not_transmmited = 0
         last_pkt_id = -1
+        jitter = 0;
         for pkt_id in self.seq_pkts:
             packet = self.merged_dict[pkt_id]
             is_packet_lost = packet['packet_lost']
@@ -117,17 +121,25 @@ class PacketAnalyser:
             transmit_timestamp = datetime.utcfromtimestamp(packet['transmit_timestamp'])
             delta_wlan_transmit = '{:0,.10f}'.format(packet['delta_wlan_transmit'])
 
+
+
             # id | Packet Lost | transmit timestamp | delta transmit | receive timestamp | delta receive | transmmission delay
             line = '{};{};{};{};{};{};{};\n'.format(pkt_id, is_packet_lost, transmit_timestamp, delta_wlan_transmit,
                                                     receive_timestamp, delta_eth_receive, transmission_delay)
             print(line)
             file.write(line)
 
+        line = 'Total of packet lost; {};\n'.format(packet_lost_counter)
+        print(line)
+        file.write(line)
+
+        line = 'Total of packet not transmmited; {};\n'.format(packet_not_transmmited)
+        print(line)
+        file.write(line)
+
         # print(merged_dict)
         file.close()
 
-        print('Total of packet lost: {}'.format(packet_lost_counter))
-        print('Total of packet not transmmited: {}'.format(packet_not_transmmited))
         return True
 
     def execute(self):
