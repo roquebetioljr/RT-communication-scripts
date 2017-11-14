@@ -3,6 +3,9 @@
 import json
 from datetime import datetime
 import sys
+import pandas as pd
+import numpy as np
+
 
 class PacketAnalyser:
 
@@ -12,6 +15,8 @@ class PacketAnalyser:
         self.out_file = out_file
         self.merged_dict = {}
         self.seq_pkts = []
+        self.transmission_delay_list = []
+        self.jitter_list = []
 
     def analyse_wlan(self):
         print('Analysing Wlan')
@@ -76,6 +81,8 @@ class PacketAnalyser:
                         self.merged_dict[pkt_id]['delta_eth_receive'] = delta
                         self.merged_dict[pkt_id]['packet_lost'] = False
                         self.merged_dict[pkt_id]['transmission_delay'] = pkt_delay
+                        self.transmission_delay_list.append(pkt_delay)
+                        self.jitter_list.append(delta)
                     else:
                         del self.merged_dict[pkt_id] # ignore this packet. Something wrong happend
                         self.seq_pkts.remove(pkt_id)
@@ -150,9 +157,21 @@ class PacketAnalyser:
 
         avg_transmit_delay = (sum_transmit_delay/packet_received_counter)
 
-        line = 'Average of transmission delay; {};\n'.format(avg_transmit_delay)
+        line = 'Average of transmission delay; {} ms;\n'.format(avg_transmit_delay * 100)
         print(line)
         file.write(line)
+
+        pkt_series = pd.Series(self.transmission_delay_list)
+
+        line = 'Standard deviation of transmission delay; {} ms;\n'.format(pkt_series.std() * 100)
+        print(line)
+        file.write(line)
+
+        pkt_series = pd.Series(self.jitter_list)
+
+        line = 'Mean Jitter; {} ms;\n'.format(pkt_series.mean() * 100)
+        #print(line)
+        #file.write(line)
 
         # print(merged_dict)
         file.close()
