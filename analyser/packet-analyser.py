@@ -157,19 +157,19 @@ class PacketAnalyser:
 
         avg_transmit_delay = (sum_transmit_delay/packet_received_counter)
 
-        line = 'Average of transmission delay; {} ms;\n'.format(avg_transmit_delay * 100)
+        line = 'Average of transmission delay; {} ms;\n'.format(avg_transmit_delay * 1000)
         print(line)
         file.write(line)
 
         pkt_series = pd.Series(self.transmission_delay_list)
 
-        line = 'Standard deviation of transmission delay; {} ms;\n'.format(pkt_series.std() * 100)
+        line = 'Standard deviation of transmission delay; {} ms;\n'.format(pkt_series.std() * 1000)
         print(line)
         file.write(line)
 
         pkt_series = pd.Series(self.jitter_list)
 
-        line = 'Mean Jitter; {} ms;\n'.format(pkt_series.mean() * 100)
+        line = 'Mean Jitter; {} ms;\n'.format(pkt_series.mean() * 1000)
         #print(line)
         #file.write(line)
 
