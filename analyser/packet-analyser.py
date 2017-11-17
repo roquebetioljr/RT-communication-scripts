@@ -170,8 +170,8 @@ class PacketAnalyser:
         pkt_series = pd.Series(self.jitter_list)
 
         line = 'Mean Jitter; {} ms;\n'.format(pkt_series.mean() * 1000)
-        #print(line)
-        #file.write(line)
+        print(line)
+        file.write(line)
 
         # print(merged_dict)
         file.close()
