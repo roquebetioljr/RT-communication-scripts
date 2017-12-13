@@ -26,7 +26,7 @@ do
 
     while [ $CNT -lt 10 ] ; do
         echo "Analysing test ${CNT}"
-        python ~/dev/RT-communication-scripts/analyser/packet-analyser.py wlan_${CNT}.json eth_${CNT}.json test_${CNT}.csv &
+        python ~/dev/RT-communication-scripts/analyser/packet-analyser2.py wlan_${CNT}.json eth_${CNT}.json test_${CNT}.csv 0.01 &
         CNT=$((CNT+1))
     done
 

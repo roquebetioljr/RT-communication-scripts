@@ -173,6 +173,10 @@ class PacketAnalyser:
         print(line)
         file.write(line)
 
+        line = 'Packet lost (percent); {};\n'.format(float(float(float(packet_lost_cnt)/float(transmitted_cnt))*100))
+        print(line)
+        file.write(line)
+
         #pkt_series = pd.Series(self.jitter_list)
 
         #line = 'Mean Jitter; {} ms;\n'.format(pkt_series.mean() * 1000)
