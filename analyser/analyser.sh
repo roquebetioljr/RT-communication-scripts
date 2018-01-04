@@ -11,6 +11,8 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
+CURR_PWD=${PWD}
+
 for var in "$@"
 do
     echo "$var"
@@ -24,14 +26,14 @@ do
 
     CNT=0
 
-    while [ $CNT -lt 10 ] ; do
+    while [ $CNT -lt 16 ] ; do
         echo "Analysing test ${CNT}"
-        python ~/dev/RT-communication-scripts/analyser/packet-analyser2.py wlan_${CNT}.json eth_${CNT}.json test_${CNT}.csv 0.01 &
+        python ~/dev/RT-communication-scripts/analyser/packet-analyser2.py wlan_${CNT}.json eth_${CNT}.json test_${CNT}.csv 0.05 &
         CNT=$((CNT+1))
     done
 
     wait
-    cd ..
+    cd ${CURR_PWD}
 done
 
 echo "end"

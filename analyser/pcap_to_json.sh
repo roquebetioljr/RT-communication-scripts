@@ -11,6 +11,8 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
+CURR_PWD=${PWD}
+
 for var in "$@"
 do
     echo "$var"
@@ -24,7 +26,7 @@ do
 
     CNT=0
 
-    while [ $CNT -lt 10 ] ; do
+    while [ $CNT -lt 16 ] ; do
         if [ -f eth_${CNT}.pcap ]; then
             echo "Exporting eth_${CNT}.pcap"
             tshark -r eth_${CNT}.pcap -T json > eth_${CNT}.json &
@@ -42,7 +44,7 @@ do
     done
 
     wait
-    cd ..
+    cd ${CURR_PWD}
 done
 
 echo "end"
