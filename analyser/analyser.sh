@@ -19,7 +19,8 @@ do
 
     if [ ! -d $var ]; then
         echo "Path $var not found"
-        exit 1
+        echo "Resuming.."
+        continue
     fi
 
     cd $var
@@ -28,7 +29,7 @@ do
 
     while [ $CNT -lt 16 ] ; do
         echo "Analysing test ${CNT}"
-        python ~/dev/RT-communication-scripts/analyser/packet-analyser2.py wlan_${CNT}.json eth_${CNT}.json test_${CNT}.csv 0.05 &
+        python ~/dev/RT-communication-scripts/analyser/packet-analyser2.py wlan_${CNT}.json eth_${CNT}.json test_${CNT}.csv 0.01 &
         CNT=$((CNT+1))
     done
 

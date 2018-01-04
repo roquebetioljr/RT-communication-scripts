@@ -19,7 +19,8 @@ do
 
     if [ ! -d $var ]; then
         echo "Path $var not found"
-        exit 1
+        echo "Continuing.."
+        continue
     fi
 
     cd $var
