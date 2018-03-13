@@ -165,11 +165,11 @@ class PacketAnalyser:
 
         avg_transmit_delay = pkt_series.mean()
 
-        line = 'Average of transmission delay; {} ms;\n'.format(avg_transmit_delay * 1000)
+        line = 'Average of transmission delay;{};\n'.format(avg_transmit_delay * 1000)
         print(line)
         file.write(line)
 
-        line = 'Standard deviation of transmission delay; {} ms;\n'.format(pkt_series.std() * 1000)
+        line = 'Standard deviation of transmission delay;{};\n'.format(pkt_series.std() * 1000)
         print(line)
         file.write(line)
 

@@ -157,7 +157,7 @@ class PacketAnalyser:
 
         avg_transmit_delay = (sum_transmit_delay/packet_received_counter)
 
-        line = 'Average of transmission delay; {} ms;\n'.format(avg_transmit_delay * 1000)
+        line = 'Average of transmission delay; {};\n'.format(avg_transmit_delay * 1000)
         print(line)
         file.write(line)
 
