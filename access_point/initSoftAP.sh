@@ -1,7 +1,7 @@
 #!/bin/bash
 #Initial wifi interface configuration
 #ifconfig $1 up 10.0.0.1 netmask 255.255.255.0
-ifconfig $1 up 192.168.1.1 netmask 255.255.255.0
+ifconfig $1 up 192.168.0.1 netmask 255.255.255.0
 sleep 2
 ###########Start DHCP, comment out / add relevant section##########
 #Thanks to Panji

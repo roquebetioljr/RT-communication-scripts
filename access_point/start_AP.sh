@@ -1,5 +1,5 @@
 #sudo systemctl disable NetworkManager.service
-
+#sudo iface eth0 inet dhcp
 #Passo 1: Configurar as placas de rede ethernet eth0 em cada maquina
 # maquina como ponto de acesso com o IP: 192.168.2.1
 # maquina como cliente com o IP: 192.168.2.2
@@ -12,9 +12,9 @@ echo "Ethernet intialized."
 
 #Passo 2: Configurar o ponto de acesso
 echo "Initializing WiFi"
-sudo nmcli radio wifi off
+sudo nmcli nm wifi off
 sudo rfkill unblock wlan
-sudo ifconfig wlan3 192.168.2.100/24 up
+sudo ifconfig wlan0 192.168.0.1/24 up
 #sudo service isc-dhcp-server start 
 #sudo service hostapd start
 echo "WiFi initialized"
@@ -33,24 +33,23 @@ sleep 2
 #passo 3: habilitar o servidor dhcp do ponto de acesso
 
 echo "Setup WiFi"
-sudo ./initSoftAP.sh wlan3 eth0 &
+sudo ./initSoftAP.sh wlan0 eth0 &
 echo "Wifi configured - running hostapd in background"
 
 
 sleep 5
 #passo 4: definir a regra do do Iptables
 echo "Passo 4 - start"
-sudo iptables -t nat -A PREROUTING -p udp -i wlan3 -d 192.168.3.30 --dport 5100 -j DNAT --to 192.168.2.30:5100
-sudo iptables -t nat -A PREROUTING -p udp -i wlan3 -d 192.168.3.31 --dport 5100 -j DNAT --to 192.168.2.31:5100
-sudo iptables -t nat -A PREROUTING -p udp -i wlan3 -d 192.168.3.32 --dport 5100 -j DNAT --to 192.168.2.32:5100
-sudo iptables -t nat -A PREROUTING -p udp -i wlan3 -d 192.168.3.33 --dport 5100 -j DNAT --to 192.168.2.33:5100
-sudo iptables -t nat -A PREROUTING -p udp -i wlan3 -d 192.168.3.34 --dport 5100 -j DNAT --to 192.168.2.34:5100
-sudo iptables -t nat -A PREROUTING -p udp -i wlan3 -d 192.168.3.35 --dport 5100 -j DNAT --to 192.168.2.35:5100
-sudo iptables -t nat -A PREROUTING -p udp -i wlan3 -d 192.168.3.36 --dport 5100 -j DNAT --to 192.168.2.36:5100
-sudo iptables -t nat -A PREROUTING -p udp -i wlan3 -d 192.168.3.37 --dport 5100 -j DNAT --to 192.168.2.37:5100
-sudo iptables -t nat -A PREROUTING -p udp -i wlan3 -d 192.168.3.38 --dport 5100 -j DNAT --to 192.168.2.38:5100
-sudo iptables -t nat -A PREROUTING -p udp -i wlan3 -d 192.168.3.39 --dport 5100 -j DNAT --to 192.168.2.39:5100
-sudo iptables -t nat -A PREROUTING -p udp -i wlan3 -d 192.168.3.40 --dport 5100 -j DNAT --to 192.168.2.40:5100
+sudo iptables -t nat -A PREROUTING -p udp -i wlan3 -d 192.168.1.10 --dport 5100 -j DNAT --to 192.168.0.10:5100
+sudo iptables -t nat -A PREROUTING -p udp -i wlan3 -d 192.168.1.11 --dport 5100 -j DNAT --to 192.168.0.11:5100
+sudo iptables -t nat -A PREROUTING -p udp -i wlan3 -d 192.168.1.12 --dport 5100 -j DNAT --to 192.168.0.12:5100
+sudo iptables -t nat -A PREROUTING -p udp -i wlan3 -d 192.168.1.13 --dport 5100 -j DNAT --to 192.168.0.13:5100
+sudo iptables -t nat -A PREROUTING -p udp -i wlan3 -d 192.168.1.14 --dport 5100 -j DNAT --to 192.168.0.14:5100
+sudo iptables -t nat -A PREROUTING -p udp -i wlan3 -d 192.168.1.15 --dport 5100 -j DNAT --to 192.168.0.15:5100
+sudo iptables -t nat -A PREROUTING -p udp -i wlan3 -d 192.168.1.16 --dport 5100 -j DNAT --to 192.168.0.16:5100
+sudo iptables -t nat -A PREROUTING -p udp -i wlan3 -d 192.168.1.17 --dport 5100 -j DNAT --to 192.168.0.17:5100
+sudo iptables -t nat -A PREROUTING -p udp -i wlan3 -d 192.168.1.18 --dport 5100 -j DNAT --to 192.168.0.18:5100
+sudo iptables -t nat -A PREROUTING -p udp -i wlan3 -d 192.168.1.19 --dport 5100 -j DNAT --to 192.168.0.19:5100
 
 sleep 2
 sudo service isc-dhcp-server status
