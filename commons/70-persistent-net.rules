@@ -1,11 +1,8 @@
-# Qualcomm Athero AR8161 Gigabit Ethernet 
-SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="94:de:80:2d:f3:5a", NAME="eth0"
+# On board ethernet 
+SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="20:47:47:fc:17:4e", NAME="eth0"
 
-# Sundance Tecnology / IC Plus IP1000 Family Gigabit Ethernet
-SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:06:4f:26:cd:ec", NAME="eth1"
-
-# 3COM USB WiFi / Atheros Communications, Inc. 3Com 3CRUSBN275 802.11abgn Wireless Adapter [Atheros AR9170]
-SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:24:73:89:35:e2", NAME="wlan3"
+# On Board wifi
+SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="70:77:81:d5:44:df", NAME="wlan0"
 
 
 

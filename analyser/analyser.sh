@@ -31,9 +31,9 @@ do
         echo "Analysing test ${CNT}"
 # deadlines
 # 0.01 for 36kbps
-# 0.02 for 16kbps
+# 0.02 for 18kbps
 # 0.05 for 7.2kbps
-        python ~/dev/RT-communication-scripts/analyser/packet-analyser2.py wlan_${CNT}.json eth_${CNT}.json test_${CNT}.csv 0.01 &
+        python ~/dev/RT-communication-scripts/analyser/packet-analyser2.py wlan_${CNT}.json eth_${CNT}.json test_${CNT}.csv 0.05 &
         CNT=$((CNT+1))
     done
 

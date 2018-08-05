@@ -14,7 +14,6 @@ def get_statistics(filename):
     read_file = open(filename, 'r')
     line = read_file.readline()
     while len(line) != 0:
-        print("a\n")
         if line.startswith("Total of transmitted packets"):
             transmitted_packets.append(line[len("Total of transmitted packets; "):(len(line)-2)])
         if line.startswith("Total of received packets"):
@@ -76,6 +75,7 @@ if __name__ == '__main__':
     if len(sys.argv) < 2 or len(sys.argv) > 18:
         print("ERROR! Invalid input arguments ({}).\n Use $ python merge_results.py <in_files> <out_file>\n".format(len(sys.argv)))
     else:
+        print(sys.argv)
         count = 1
         while count < len(sys.argv) - 1:
             print("{}\n".format(sys.argv[count]))
