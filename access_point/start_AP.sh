@@ -15,7 +15,7 @@ echo "Initializing WiFi"
 sudo nmcli radio wifi off
 sudo rfkill unblock wlan
 sudo ifconfig wlan3 192.168.2.100/24 up
-#sudo service isc-dhcp-server start 
+#sudo service isc-dhcp-application start
 #sudo service hostapd start
 echo "WiFi initialized"
 
