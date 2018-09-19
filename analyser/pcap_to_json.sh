@@ -25,24 +25,11 @@ do
 
     cd $var
 
-    CNT=0
-
-    while [ $CNT -lt 16 ] ; do
-        if [ -f eth_${CNT}.pcap ]; then
-            echo "Exporting eth_${CNT}.pcap"
-            tshark -r eth_${CNT}.pcap -T json > eth_${CNT}.json &
-        else
-            echo "File eth_${CNT}.pcap not found. Continuing.."
-        fi
-
-        if [ -f wlan_${CNT}.pcap ]; then
-            echo "Exporting wlan_${CNT}.pcap"
-            tshark -r wlan_${CNT}.pcap -T json > wlan_${CNT}.json &
-        else
-            echo "File wlan_${CNT}.pcap not found. Continuing.."
-        fi
-        CNT=$((CNT+1))
+    for f in *.pcap; do
+        echo "Exporting $f"
+        tshark -r $f -T json > $f.json &
     done
+    CNT=0
 
     wait
     cd ${CURR_PWD}

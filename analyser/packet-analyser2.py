@@ -8,17 +8,32 @@ import pandas as pd
 
 class PacketAnalyser:
 
-    def __init__(self, wlan_file, eth_file, out_file, deadline):
+    def __init__(self, wlan_file, eth_file, diff_time_file, out_file, deadline):
         self.wlan_file = wlan_file
         self.eth_file = eth_file
         self.out_file = out_file
+        self.diff_file = diff_time_file
         self.deadline = deadline
         self.merged_dict = {}
         self.seq_pkts = []
 
         self.wlan_start = 0
         self.eth_start = 0
+        self.diff = 0
         self.first_receive_variation = 0
+
+    def load_diff_time(self):
+        print('Getting diff time')
+        try:
+            file = open(self.diff_file, 'r')
+            diff_content = file.read()
+            file.close()
+            print("Diff: {}".format(diff_content.strip()))
+            self.diff = float(diff_content.strip())
+        except:
+            print("ERROR! Couldn't open {} file.".format(self.wlan_file))
+            return False
+        return True
 
     def analyse_wlan(self):
         print('Analysing Wlan')
@@ -69,7 +84,9 @@ class PacketAnalyser:
                 pkt_id = int(pkt_id, 16)
                 if self.eth_start == 0:
                     self.eth_start = float(packet['_source']['layers']['frame']['frame.time_epoch'])
-                    self.first_receive_variation = self.eth_start - self.wlan_start
+                    print("Client start: {}".format(self.wlan_start))
+                    print("Server start: {}".format(self.eth_start))
+                    self.first_receive_variation = self.eth_start - self.wlan_start - self.diff
 
                 pkt_time = float(packet['_source']['layers']['frame']['frame.time_relative']) + self.first_receive_variation
 
@@ -189,15 +206,15 @@ class PacketAnalyser:
         return True
 
     def execute(self):
-        if self.analyse_wlan() and self.analyse_eth() and self.write_out_file():
+        if self.load_diff_time() and self.analyse_wlan() and self.analyse_eth() and self.write_out_file():
             print("FINISHED. Success!")
         else:
             print("FINISHED. Failed!")
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 5:
-        print("ERROR! Invalid input.\n Use $ python packet-analyser.py <wlan_file> <eth_file> <out_file> <deadline in seconds> \n")
+    if len(sys.argv) != 6:
+        print("ERROR! Invalid input.\n Use $ python packet-analyser.py <wlan_file> <eth_file> <diff_file> <out_file> <deadline in seconds> \n")
     else:
-        analyser = PacketAnalyser(str(sys.argv[1]), str(sys.argv[2]), str(sys.argv[3]), float(sys.argv[4]))
+        analyser = PacketAnalyser(str(sys.argv[1]), str(sys.argv[2]), str(sys.argv[3]), str(sys.argv[4]), float(sys.argv[5]))
         analyser.execute()
